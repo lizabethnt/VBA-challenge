@@ -32,7 +32,7 @@ For Each ws In Worksheets
     Range("L1") = "Total Stock Volume"
 
     'finds the number of rows that have data
-    RowCount = Cells(Rows.Count, "A").End(xlUp).Row
+    RowCount = Cells(Rows.Count, 1).End(xlUp).Row
 
     'loops through all of the non-empty rows and if the column A ticker is different from the following row, then:
     'puts the ticker, yearly change, percent change and total stock volume in the corresponding output columns
@@ -68,50 +68,64 @@ For Each ws In Worksheets
         
     Next j
         
+    'applies formatting to the yearly percent column and greatest and least percent results(written by recording a macro then editing)
+    Columns("K:K").Select
+    Selection.Style = "Percent"
+    Selection.NumberFormat = "0.00%"
+    Range("Q2").Select
+    Selection.Style = "Percent"
+    Selection.NumberFormat = "0.00%"
+    Range("Q3").Select
+    Selection.Style = "Percent"
+    Selection.NumberFormat = "0.00%"
 
-
-Next ws
+    'finds and reports the greatest % increase and greatest % decrease and greatest total volume
+    'declares variables
+    Dim greatest_percent_increase As Double
+    Dim greatest_percent_increase_ticker As String
+    Dim greatest_percent_decrease As Double
+    Dim greatest_percent_decrease_ticker As String
+    Dim greatest_total_volume As Double
+    Dim greatest_total_volume_ticker As String
 
     'adds to the sheet labels for the greatest % increase, greatest % decrease and greatest total volume
-    Sheets("A").Cells(2, "O").Value = "Greatest % Increase"
-    Sheets("A").Cells(3, "O").Value = "Greatest % Decrease"
-    Sheets("A").Cells(4, "O").Value = "Greatest Total Volume"
-    Sheets("A").Cells(1, "P").Value = "Ticker"
-    Sheets("A").Cells(1, "Q").Value = "Value"
+    Cells(2, "O").Value = "Greatest % Increase"
+    Cells(3, "O").Value = "Greatest % Decrease"
+    Cells(4, "O").Value = "Greatest Total Volume"
+    Cells(1, "P").Value = "Ticker"
+    Cells(1, "Q").Value = "Value"
     
-    'finds and reports the greatest % increase and greatest % decrease and greatest total volume
-
-Dim greatest_percent_change As Double
-Dim greatest_percent_change_ticker As String
-Dim greates_percent_decrease As Double
-Dim greatest_percent_decrease_ticker As String
-
-greatest_percent_change = 0
-
-For Each ws In Worksheets
-        
-        RowCount_tickertotals = ws.Cells(Rows.Count, "I").End(xlUp).Row
-        
+    'initializes variables for this sheet
+    RowCount_tickertotals = Cells(Rows.Count, 9).End(xlUp).Row
+    greatest_percent_increase = 0
+    greatest_percent_decrease = 0
+    greatest_total_volume = 0
+    
     For K = 2 To RowCount_tickertotals
-        If ws.Cells(K, "K").Value > greatest_percent_change Then
-            greatest_percent_change = ws.Cells(K, "K").Value
-            greatest_percent_change_ticker = ws.Cells(K, "I").Value
+        If Cells(K, "K").Value > greatest_percent_increase Then
+            greatest_percent_increase = Cells(K, "K").Value
+            greatest_percent_increase_ticker = Cells(K, "I").Value
         End If
         
-        If ws.Cells(K, "K").Value < Sheets(1).Cells(3, "Q").Value Then
-            Sheets(1).Cells(3, "Q").Value = ws.Cells(K, "K").Value
-            Sheets(1).Cells(3, "P").Value = ws.Cells(K, "I").Value
+        If Cells(K, "K").Value < greatest_percent_decrease Then
+            greatest_percent_decrease = Cells(K, "K").Value
+            greatest_percent_decrease_ticker = Cells(K, "I").Value
         End If
         
-        If ws.Cells(K, "L").Value > Sheets(1).Cells(4, "Q").Value Then
-            Sheets(1).Cells(4, "Q").Value = ws.Cells(K, "L").Value
-            Sheets(1).Cells(4, "P").Value = ws.Cells(K, "I").Value
+        If Cells(K, "L").Value > greatest_total_volume Then
+            greatest_total_volume = Cells(K, "L").Value
+            greatest_total_volume_ticker = Cells(K, "I").Value
         End If
     
     Next K
     
+    Cells(2, "Q").Value = greatest_percent_increase
+    Cells(2, "P").Value = greatest_percent_increase_ticker
+    Cells(3, "Q").Value = greatest_percent_decrease
+    Cells(3, "P").Value = greatest_percent_decrease_ticker
+    Cells(4, "Q").Value = greatest_total_volume
+    Cells(4, "P").Value = greatest_total_volume_ticker
 Next ws
-Sheets(1).Cells(2, "Q").Value = greatest_percent_change
-Sheets(1).Cells(2, "P").Value = greatest_percent_change_ticker
 
 End Sub
+
